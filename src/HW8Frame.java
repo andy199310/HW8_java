@@ -1,4 +1,6 @@
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JTextField;
@@ -27,6 +29,8 @@ public class HW8Frame extends JFrame{
 	
 	//Properties
 	private boolean proAutoTick;
+	private boolean proAMPM;
+	private int proTickRate;
 	
 	
 	private HW8Draw panelUp;
@@ -37,11 +41,18 @@ public class HW8Frame extends JFrame{
 	private JButton[] downFunctionButton; // +/-button
 	private JTextField[] downOutput;
 	private JButton downAutoTickButton;
+	private JButton downNewTimeButton;
+	private JTextField downTickRateField;
+	private JButton dowmTickRateButton;
+	private JLabel downAMPMLabel;
 	
 	public HW8Frame(){
 		timer = new HW8Timer();
 		buttonHanler = new ButtonHanler();
+		fieldHanler = new FieldHanler();
 		proAutoTick = false;
+		proAMPM = false;
+		proTickRate = 1;
 		initial();
 		reflushTime();
 	}
@@ -81,12 +92,17 @@ public class HW8Frame extends JFrame{
 		downFunctionButton = new JButton[6];
 		downOutput = new JTextField[3];
 		downAutoTickButton = new JButton("Start auto tick");
+		downTickRateField = new JTextField(3);
+		downNewTimeButton = new JButton("Set new tick rate(s).");
+		downAMPMLabel = new JLabel();
 		
 		//Setup
 		panelDown.setLayout(new GridBagLayout());
 		
 		downAutoTickButton.setActionCommand("autoTick");
 		downAutoTickButton.addActionListener(buttonHanler);
+		downNewTimeButton.setActionCommand("tickRate");
+		downNewTimeButton.addActionListener(buttonHanler);
 		
 		//Add hour, minute, second : text field and button
 		for (int i=0; i<3; i++){
@@ -109,16 +125,25 @@ public class HW8Frame extends JFrame{
 			downOutput[i].setActionCommand(String.valueOf(i));
 			
 			//Add
-			panelDown.add(downFunctionButton[i], setConstraints(i, 0, 1, 1));
-			panelDown.add(downOutput[i], setConstraints(i, 1, 1, 1));
-			panelDown.add(downFunctionButton[i+3], setConstraints(i, 2, 1, 1));
+			panelDown.add(downFunctionButton[i], setConstraints(i+1, 0, 1, 1));
+			panelDown.add(downOutput[i], setConstraints(i+1, 1, 1, 1));
+			panelDown.add(downFunctionButton[i+3], setConstraints(i+1, 2, 1, 1));
 		}
 		
-		panelDown.add(downAutoTickButton, setConstraints(3, 1, 1, 1));
+		panelDown.add(downAMPMLabel, setConstraints(0, 1, 1, 1));
+		panelDown.add(downAutoTickButton, setConstraints(4, 1, 2, 1));
+		panelDown.add(downTickRateField, setConstraints(4, 2, 1, 1));
+		panelDown.add(downNewTimeButton, setConstraints(5, 2, 1, 1));
 	}
 	
 	private void reflushTime(){
 		//down output
+		if (proAMPM == true){ //want AM PM
+			if (timer.getHour() >= 12){
+				
+			}
+		}
+		
 		downOutput[0].setText(String.format("%02d", timer.getHour()));
 		downOutput[1].setText(String.format("%02d", timer.getMinute()));
 		downOutput[2].setText(String.format("%02d", timer.getSecond()));
@@ -186,6 +211,17 @@ public class HW8Frame extends JFrame{
 					timerRun.schedule(timerDo, 0, 1000);
 				}
 				break;
+				
+			case "tickRate":
+				try{
+					int rate = Integer.parseInt(downTickRateField.getText());
+					proTickRate = rate;
+				}catch(NumberFormatException e){
+					JOptionPane.showMessageDialog(HW8Frame.this, "Please input number!!");
+					downTickRateField.setText("1");
+					proTickRate = 1;
+				}
+				break;
 			}
 			reflushTime();
 		}
@@ -194,18 +230,73 @@ public class HW8Frame extends JFrame{
 	
 	//Field handler
 	private class FieldHanler implements ActionListener{
-		
+		/*
+		 * Rule:
+		 * 0, 1, 2: input (h, m, s)
+		 */
 		public void actionPerformed(ActionEvent event) {
-			// TODO button handler
+			String command = event.getActionCommand();
 			
+			System.out.println("(FieldHanler): " + command);
+			
+			switch(command){
+			case "0":	//set hour
+				int hour = getUserInput(command);
+				if (hour != -100){
+					if (hour <0 || hour > 23){
+						//Out of range
+						JOptionPane.showMessageDialog(HW8Frame.this, "Hour out of range(0~23)");
+					}
+					else{
+						timer.setHour(hour);
+					}
+				}
+				break;
+			case "1":	//set minute
+				int minute = getUserInput(command);
+				if (minute != -100){			
+					if (minute < 0 || minute > 59){
+						//Out of range
+						JOptionPane.showMessageDialog(HW8Frame.this, "Minute out of range(0~59)");
+					}
+					else{
+						timer.setMinute(minute);
+					}
+				}
+				break;
+			case "2":	//set second
+				int second = getUserInput(command);
+				if (second != -100){
+					if(second < 0 || second > 59){
+						//Out of range
+						JOptionPane.showMessageDialog(HW8Frame.this, "Second out of range(0~59)");
+					}
+					else{
+						timer.setSecond(second);
+					}
+				}
+				break;
+			}
+			reflushTime();
 		}
-			
+		
+		private int getUserInput(String command){
+			int time = -100;
+			int id = Integer.parseInt(command);
+			try{
+				 time = Integer.parseInt(downOutput[id].getText());
+			}catch(NumberFormatException e){
+				JOptionPane.showMessageDialog(HW8Frame.this, "Please input number!!");
+				downOutput[id].setText("");
+			}
+			return time;
+		}
 	}
 	
 	//Time auto tick
 	private class TimerDo extends TimerTask{
 		public void run(){
-			timer.tick();
+			timer.tick(proTickRate);
 			reflushTime();
 		}
 	}
