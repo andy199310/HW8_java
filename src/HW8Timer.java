@@ -158,6 +158,14 @@ public class HW8Timer {
 	}
 	
 	/**
+	 * Add (some) second
+	 */
+	public void tick(int s){
+		second += s;
+		checkTime();
+	}
+	
+	/**
 	 * Increase one second
 	 */
 	public void incrementSecond(){

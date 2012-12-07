@@ -67,7 +67,7 @@ public class HW8Frame extends JFrame{
 		//constraints.weighty = 20;
 		constraints.insets = new Insets(5, 5, 5, 5);
 		
-		panelUp = new HW8Draw();
+		panelUp = new HW8Draw(timer);
 		panelDown = new JPanel();
 		
 		this.setLayout(new GridBagLayout());
@@ -77,6 +77,7 @@ public class HW8Frame extends JFrame{
 		
 		initialUp();
 		initialDown();
+		panelUp.repaint();
 	}
 	
 	//Initial panelUp
@@ -143,7 +144,7 @@ public class HW8Frame extends JFrame{
 				
 			}
 		}
-		
+		panelUp.repaint();
 		downOutput[0].setText(String.format("%02d", timer.getHour()));
 		downOutput[1].setText(String.format("%02d", timer.getMinute()));
 		downOutput[2].setText(String.format("%02d", timer.getSecond()));
