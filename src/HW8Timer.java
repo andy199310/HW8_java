@@ -120,16 +120,32 @@ public class HW8Timer {
 			minute += second / 60;
 			second = second % 60;
 		}
+		else if (second < 0){
+			second = Math.abs(second);
+			minute--;
+			minute -= second / 60;
+			second = 60 - second % 60;
+		}
 		
 		// Check minute
 		if(minute >= 60){
 			hour += minute / 60;
 			minute = minute % 60;
 		}
+		else if(minute < 0){
+			minute = Math.abs(minute);
+			hour--;
+			hour -= minute / 60;
+			minute = 60 - minute % 60;
+		}
 		
 		// Check hour
 		if(hour >= 24){
 			hour = hour % 24;
+		}
+		else if(hour < 0){
+			hour = Math.abs(hour);
+			hour = 24 - hour;
 		}
 	}
 	
