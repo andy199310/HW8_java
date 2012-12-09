@@ -60,7 +60,7 @@ public class HW8Frame extends JFrame{
 	// Initial the component
 	private void initial(){
 		constraints = new GridBagConstraints();
-		constraints.fill = constraints.BOTH;
+		
 		//constraints.ipadx = 20;
 		//constraints.ipady = 20;
 		//constraints.weightx = 100;
@@ -76,6 +76,7 @@ public class HW8Frame extends JFrame{
 		this.add(panelDown, setConstraints(0, 1, 1, 1));
 		
 		initialUp();
+		constraints.fill = constraints.BOTH;
 		initialDown();
 		panelUp.repaint();
 	}

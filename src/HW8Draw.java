@@ -5,6 +5,7 @@ import java.awt.Graphics;
 
 import javax.swing.JPanel;
 
+import tw.com.ncu.green.Image.GreenImageFile;
 
 public class HW8Draw extends JPanel{
 	
@@ -14,6 +15,8 @@ public class HW8Draw extends JPanel{
 	
 	private HW8Timer timer;
 	
+	private GreenImageFile image;
+	
 	public HW8Draw(HW8Timer timer){
 		this.timer = timer;
 		this.setPreferredSize(new Dimension(300, 300));
@@ -21,14 +24,17 @@ public class HW8Draw extends JPanel{
 		middleX = 150;
 		middleY = 150;
 		clockSize = 100;
+		String[] path = {"number/0.gif", "number/1.gif", "number/2.gif", "number/3.gif", "number/4.gif", "number/5.gif", "number/6.gif", "number/7.gif", "number/8.gif", "number/9.gif"}; 
+		image = new GreenImageFile(path);
 	}
 	
 	public void paintComponent(Graphics g){
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, 300, 300);
 		g.setColor(Color.BLACK);
-		g.drawRect(0, 0, 300, 300);
+		g.drawRect(0, 0, 299, 299);
 		drawClock(g);
+		drawDigitalClock(g);
 	}
 	
 	private void drawClock(Graphics g){
@@ -58,13 +64,43 @@ public class HW8Draw extends JPanel{
 		g.setColor(Color.BLUE);
 		g.drawLine(middleX, middleY, middleX + position[0], middleY + position[1]);
 		
+		//Draw Minute
 		position = getXY(minute*6 - 90);
 		g.setColor(Color.RED);
 		g.drawLine(middleX, middleY, middleX + position[0], middleY + position[1]);
 		
+		//Draw second
 		position = getXY(second*6 - 90);
 		g.setColor(Color.GREEN);
 		g.drawLine(middleX, middleY, middleX + position[0], middleY + position[1]);
+	}
+	
+	private void drawDigitalClock(Graphics g){
+		int hour = timer.getHour();
+		int minute = timer.getMinute();
+		int second = timer.getSecond();
+		
+		int x = 180;
+		int y = 280;
+		
+		drawDigitalNumber(g, x, y, hour/10);
+		x += 10;
+		drawDigitalNumber(g, x, y, hour%10);
+		x += 20;
+		
+		drawDigitalNumber(g, x, y, minute/10);
+		x += 10;
+		drawDigitalNumber(g, x, y, minute%10);
+		x += 20;
+		
+		drawDigitalNumber(g, x, y, second/10);
+		x += 10;
+		drawDigitalNumber(g, x, y, second%10);
+		x += 20;
+	}
+	
+	private void drawDigitalNumber(Graphics g, int positionX, int positionY, int number){
+		g.drawImage(image.getImage(number), positionX, positionY, null);
 	}
 	
 	private int[] getXY(int degrees){
