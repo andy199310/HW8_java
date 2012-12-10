@@ -11,6 +11,9 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -45,6 +48,8 @@ public class HW8Frame extends JFrame{
 	private JTextField downTickRateField;
 	private JButton dowmTickRateButton;
 	private JLabel downAMPMLabel;
+	private JButton downChooseButton;
+	private JButton downToSystemTimeButton;
 	
 	public HW8Frame(){
 		timer = new HW8Timer();
@@ -97,10 +102,16 @@ public class HW8Frame extends JFrame{
 		downTickRateField = new JTextField(3);
 		downNewTimeButton = new JButton("Set new tick rate(s).");
 		downAMPMLabel = new JLabel();
+		downChooseButton = new JButton("Add seconds");
+		downToSystemTimeButton = new JButton("System time");
 		
 		//Setup
 		panelDown.setLayout(new GridBagLayout());
 		
+		downChooseButton.setActionCommand("choose");
+		downChooseButton.addActionListener(buttonHanler);
+		downToSystemTimeButton.setActionCommand("systemTime");
+		downToSystemTimeButton.addActionListener(buttonHanler);
 		downAutoTickButton.setActionCommand("autoTick");
 		downAutoTickButton.addActionListener(buttonHanler);
 		downNewTimeButton.setActionCommand("tickRate");
@@ -132,6 +143,8 @@ public class HW8Frame extends JFrame{
 			panelDown.add(downFunctionButton[i+3], setConstraints(i+1, 2, 1, 1));
 		}
 		
+		panelDown.add(downChooseButton, setConstraints(4, 0, 1, 1));
+		panelDown.add(downToSystemTimeButton, setConstraints(5, 0, 1, 1));
 		panelDown.add(downAMPMLabel, setConstraints(0, 1, 1, 1));
 		panelDown.add(downAutoTickButton, setConstraints(4, 1, 2, 1));
 		panelDown.add(downTickRateField, setConstraints(4, 2, 1, 1));
@@ -223,6 +236,25 @@ public class HW8Frame extends JFrame{
 					downTickRateField.setText("1");
 					proTickRate = 1;
 				}
+				break;
+			case "choose":
+				try{
+					int second = Integer.parseInt(JOptionPane.showInputDialog(HW8Frame.this, "Please input how many second you want to add."));
+					timer.incrementSecond(second);
+				}catch(NumberFormatException e){
+					e.printStackTrace();
+					JOptionPane.showMessageDialog(HW8Frame.this, "Please type number.");
+				}
+				break;
+			case "systemTime":
+				DateFormat dateFormat = new SimpleDateFormat("HH");
+				Calendar cal = Calendar.getInstance();
+				timer.setHour(Integer.parseInt(dateFormat.format(cal.getTime())));
+				dateFormat = new SimpleDateFormat("mm");
+				timer.setMinute(Integer.parseInt(dateFormat.format(cal.getTime())));
+				dateFormat = new SimpleDateFormat("ss");
+				timer.setSecond(Integer.parseInt(dateFormat.format(cal.getTime())));
+				
 				break;
 			}
 			reflushTime();
